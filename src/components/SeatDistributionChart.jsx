@@ -19,7 +19,7 @@ export default function SeatDistributionChart({ data }) {
                             dataKey="value"
                         >
                             {data.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                <Cell key={`cell-${index}`} fill={entry.fill} />
                             ))}
                         </Pie>
                         <Tooltip

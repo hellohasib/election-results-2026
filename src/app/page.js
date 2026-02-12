@@ -87,18 +87,34 @@ export default async function Home() {
                             <div className="text-sm text-gray-500 uppercase tracking-widest">Total Votes Counted</div>
                         </div>
 
-                        {/* Party Stats */}
-                        <div className="text-center">
-                            <div className="text-3xl font-bold text-green-500">{bnpWins}</div>
-                            <div className="text-sm text-gray-500 uppercase tracking-widest">BNP Wins</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-3xl font-bold text-purple-500">{jamaatWins}</div>
-                            <div className="text-sm text-gray-500 uppercase tracking-widest">Jamaat Wins</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-3xl font-bold text-orange-500">{ncpWins}</div>
-                            <div className="text-sm text-gray-500 uppercase tracking-widest">NCP Wins</div>
+                        {/* Party Stats Table */}
+                        <div className="overflow-hidden rounded-xl border border-white/10 shadow-lg">
+                            <table className="min-w-[300px] bg-white/5 backdrop-blur-sm">
+                                <thead className="bg-white/10">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-300 uppercase tracking-wider">Party</th>
+                                        <th className="px-6 py-3 text-right text-sm font-semibold text-gray-300 uppercase tracking-wider">Seats Won</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/10">
+                                    <tr className="hover:bg-white/5 transition-colors">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-400">BNP</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-white">{bnpWins}</td>
+                                    </tr>
+                                    <tr className="hover:bg-white/5 transition-colors">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-purple-400">Jamaat</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-white">{jamaatWins}</td>
+                                    </tr>
+                                    <tr className="hover:bg-white/5 transition-colors">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-orange-400">NCP</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-white">{ncpWins}</td>
+                                    </tr>
+                                    <tr className="hover:bg-white/5 transition-colors">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-400">Others</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-white">{othersWins}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
