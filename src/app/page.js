@@ -1,6 +1,7 @@
 
 import ElectionTable from '@/components/ElectionTable';
 import SeatDistributionChart from '@/components/SeatDistributionChart';
+import DivisionWinsChart from '@/components/DivisionWinsChart';
 import { fetchElectionData } from '@/utils/googleSheets';
 
 export const revalidate = 60; // Revalidate page every 60 seconds
@@ -23,12 +24,20 @@ export default async function Home() {
     let ncpWins = 0;
     let othersWins = 0;
     let declaredSeats = 0;
+    const bnpDivisionMap = {};
 
     data.forEach(item => {
         const v1 = parseInt(item['Votes 1']) || 0;
         const v2 = parseInt(item['Votes 2']) || 0;
         const v3 = parseInt(item['Votes 3']) || 0;
         const total = v1 + v2 + v3;
+
+
+
+        // Initialize division count if not exists
+        if (item.Division && !bnpDivisionMap[item.Division]) {
+            bnpDivisionMap[item.Division] = 0;
+        }
 
         if (total > 0) {
             declaredSeats++;
@@ -44,7 +53,13 @@ export default async function Home() {
 
             if (winner.votes > 0 && winner.name) {
                 const nameLower = winner.name.toLowerCase();
-                if (nameLower.includes('bnp')) bnpWins++;
+                if (nameLower.includes('bnp')) {
+                    bnpWins++;
+                    // Increment division win for BNP
+                    if (item.Division) {
+                        bnpDivisionMap[item.Division] = (bnpDivisionMap[item.Division] || 0) + 1;
+                    }
+                }
                 else if (nameLower.includes('jamaat')) jamaatWins++;
                 else if (nameLower.includes('ncp')) ncpWins++;
                 else othersWins++;
@@ -61,6 +76,12 @@ export default async function Home() {
         { name: 'Others', value: othersWins, fill: '#6b7280' }, // Gray
         { name: 'Undeclared', value: undeclaredSeats, fill: '#e5e7eb' } // Light Gray
     ];
+
+    // Format data for Division Chart
+    const divisionChartData = Object.keys(bnpDivisionMap).sort().map(division => ({
+        name: division,
+        wins: bnpDivisionMap[division]
+    }));
 
     return (
         <main className="min-h-screen text-white p-4">
@@ -118,9 +139,14 @@ export default async function Home() {
                         </div>
                     </div>
 
-                    {/* Chart Section */}
-                    <div className="mt-8 flex justify-center">
-                        <SeatDistributionChart data={chartData} />
+                    {/* Charts Section */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8 items-start">
+                        <div className="flex justify-center w-full">
+                            <SeatDistributionChart data={chartData} />
+                        </div>
+                        <div className="flex justify-center w-full">
+                            <DivisionWinsChart data={divisionChartData} />
+                        </div>
                     </div>
                 </div>
 
