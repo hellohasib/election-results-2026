@@ -83,7 +83,10 @@ export default function ElectionTable({ data }) {
                     const winnerIndex = totalVotes > 0 ? sortedCandidates[0].originalIndex : -1;
 
                     // Alternating background colors
-                    const bgColor = index % 2 === 0 ? 'bg-white' : 'bg-orange-50';
+                    let bgColor = index % 2 === 0 ? 'bg-white' : 'bg-orange-50';
+                    if (totalVotes > 0) {
+                        bgColor = 'bg-green-50';
+                    }
 
                     return (
                         <motion.div
