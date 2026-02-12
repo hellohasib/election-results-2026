@@ -33,27 +33,27 @@ export default function ElectionTable({ data }) {
     return (
         <div className="w-full max-w-7xl mx-auto p-4 space-y-6">
             {/* Controls */}
-            <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 shadow-lg">
+            <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-4 rounded-xl shadow-lg border border-white/10">
                 <div className="relative w-full md:w-96">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input
                         type="text"
                         placeholder="Search Constituency..."
-                        className="w-full pl-10 pr-4 py-2 bg-black/20 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
 
                 <div className="flex items-center gap-2 w-full md:w-auto">
-                    <Filter className="text-gray-400 w-5 h-5" />
+                    <Filter className="text-gray-500 w-5 h-5" />
                     <select
-                        className="bg-black/20 border border-white/10 rounded-lg text-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 w-full md:w-auto"
+                        className="bg-gray-50 border border-gray-200 rounded-lg text-gray-900 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-auto"
                         value={selectedDivision}
                         onChange={(e) => setSelectedDivision(e.target.value)}
                     >
                         {divisions.map(div => (
-                            <option key={div} value={div} className="bg-gray-900 text-white">
+                            <option key={div} value={div} className="text-gray-900">
                                 {div}
                             </option>
                         ))}
@@ -69,12 +69,21 @@ export default function ElectionTable({ data }) {
                     const v3 = parseVotes(item['Votes 3']);
                     const totalVotes = v1 + v2 + v3;
 
-                    let winnerIndex = -1;
-                    if (totalVotes > 0) {
-                        if (v1 > v2 && v1 > v3) winnerIndex = 1;
-                        else if (v2 > v1 && v2 > v3) winnerIndex = 2;
-                        else if (v3 > v1 && v3 > v2) winnerIndex = 3;
-                    }
+                    // Create array of candidates with their data
+                    const candidates = [
+                        { name: item['Candidate 1'], votes: v1, color: 'bg-green-500', originalIndex: 1 },
+                        { name: item['Candidate 2'], votes: v2, color: 'bg-purple-500', originalIndex: 2 },
+                        { name: item['Candidate 3'], votes: v3, color: 'bg-orange-500', originalIndex: 3 }
+                    ];
+
+                    // Sort candidates by votes in descending order
+                    const sortedCandidates = candidates.sort((a, b) => b.votes - a.votes);
+
+                    // Winner is the first candidate after sorting (highest votes)
+                    const winnerIndex = totalVotes > 0 ? sortedCandidates[0].originalIndex : -1;
+
+                    // Alternating background colors
+                    const bgColor = index % 2 === 0 ? 'bg-white' : 'bg-orange-50';
 
                     return (
                         <motion.div
@@ -82,47 +91,31 @@ export default function ElectionTable({ data }) {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 shadow-xl hover:shadow-2xl hover:bg-white/10 transition-all duration-300"
+                            className={`${bgColor} rounded-xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300`}
                         >
-                            <div className="flex justify-between items-start mb-4 border-b border-white/10 pb-4">
+                            <div className="flex justify-between items-start mb-4 border-b border-gray-100 pb-4">
                                 <div>
-                                    <h3 className="text-xl font-bold text-white">{item.Constituency}</h3>
-                                    <span className="text-sm text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full mt-2 inline-block">
+                                    <h3 className="text-xl font-bold text-gray-900">{item.Constituency}</h3>
+                                    <span className="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded-full mt-2 inline-block font-medium">
                                         {item.Division}
                                     </span>
                                 </div>
                                 {winnerIndex !== -1 && (
-                                    <Trophy className="text-yellow-400 w-6 h-6 animate-pulse" />
+                                    <Trophy className="text-yellow-500 w-6 h-6 animate-pulse" />
                                 )}
                             </div>
 
                             <div className="space-y-4">
-                                {/* Candidate 1 */}
-                                <CandidateRow
-                                    name={item['Candidate 1']}
-                                    votes={v1}
-                                    total={totalVotes}
-                                    isWinner={winnerIndex === 1}
-                                    color="bg-green-500"
-                                />
-
-                                {/* Candidate 2 */}
-                                <CandidateRow
-                                    name={item['Candidate 2']}
-                                    votes={v2}
-                                    total={totalVotes}
-                                    isWinner={winnerIndex === 2}
-                                    color="bg-purple-500"
-                                />
-
-                                {/* Candidate 3 */}
-                                <CandidateRow
-                                    name={item['Candidate 3']}
-                                    votes={v3}
-                                    total={totalVotes}
-                                    isWinner={winnerIndex === 3}
-                                    color="bg-orange-500"
-                                />
+                                {sortedCandidates.map((candidate, idx) => (
+                                    <CandidateRow
+                                        key={idx}
+                                        name={candidate.name}
+                                        votes={candidate.votes}
+                                        total={totalVotes}
+                                        isWinner={candidate.originalIndex === winnerIndex}
+                                        color={candidate.color}
+                                    />
+                                ))}
                             </div>
                         </motion.div>
                     );
@@ -130,7 +123,7 @@ export default function ElectionTable({ data }) {
             </div>
 
             {filteredData.length === 0 && (
-                <div className="text-center text-gray-400 py-20">
+                <div className="text-center text-white/80 py-20">
                     No results found matching your criteria.
                 </div>
             )}
@@ -146,18 +139,18 @@ function CandidateRow({ name, votes, total, isWinner, color }) {
     return (
         <div className="relative">
             <div className="flex justify-between text-sm mb-1">
-                <span className={`font-medium ${isWinner ? 'text-yellow-300' : 'text-gray-300'}`}>
+                <span className={`font-medium ${isWinner ? 'text-yellow-600 font-bold' : 'text-gray-700'}`}>
                     {name}
                 </span>
-                <span className="text-gray-400">{votes.toLocaleString()}</span>
+                <span className="text-gray-600">{votes.toLocaleString()}</span>
             </div>
-            <div className="w-full h-2 bg-gray-700/50 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                 <div
-                    className={`h-full ${color} transition-all duration-1000 ${isWinner ? 'shadow-[0_0_10px_rgba(255,255,255,0.5)]' : ''}`}
+                    className={`h-full ${color} transition-all duration-1000 ${isWinner ? 'shadow-sm' : ''}`}
                     style={{ width: `${percentage}%` }}
                 />
             </div>
-            <div className="text-right text-xs text-gray-500 mt-0.5">{percentage}%</div>
+            <div className="text-right text-xs text-gray-400 mt-0.5">{percentage}%</div>
         </div>
     );
 }

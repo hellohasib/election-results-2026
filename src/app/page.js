@@ -17,7 +17,7 @@ export default async function Home() {
     }, 0);
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black text-white p-4">
+        <main className="min-h-screen text-white p-4">
             <div className="max-w-7xl mx-auto py-10 space-y-8">
                 {/* Header Section */}
                 <div className="text-center space-y-4">
